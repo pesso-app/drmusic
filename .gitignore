@@ -1,0 +1,10 @@
+# Copias de seguridad de desarrollo
+MiSpotify.html.backup
+
+# Carpetas de dependencias locales (si se usan en el futuro)
+node_modules/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini

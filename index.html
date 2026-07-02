@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#121212">
+  <meta name="description" content="DR Music - Tu música favorita">
+  <title>DR Music</title>
+
+  <!-- Enlace al manifiesto de la PWA -->
+  <link rel="manifest" href="manifest.json">
+  <!-- Favicon / Icono -->
+  <link rel="icon" type="image/png" href="icons/icon.png">
+  <link rel="apple-touch-icon" href="icons/icon.png">
+
+  <!-- Hojas de Estilos -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Carga de Iconos (Ionicons) -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+<body class="theme-green">
+
+  <!-- Indicador Offline -->
+  <div class="offline-badge" id="offline-badge">
+    <ion-icon name="cloud-offline"></ion-icon>
+    <span>Modo offline activo</span>
+  </div>
+
+  <!-- Toast de Notificaciones -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Menú de Acciones (Action Sheet) -->
+  <div class="action-sheet" id="action-sheet" onclick="if(event.target===this)closeActionSheet()">
+    <div class="action-sheet-content" id="action-sheet-content"></div>
+  </div>
+
+  <!-- Cabecera Principal -->
+  <header class="app-header">
+    <div class="logo">
+      <div class="logo-icon"><ion-icon name="musical-notes"></ion-icon></div>
+      DR Music
+    </div>
+    <div class="search-wrapper">
+      <ion-icon name="search"></ion-icon>
+      <input id="search" type="text" placeholder="Buscar música o artistas" autocomplete="off">
+    </div>
+    <button id="settings-btn" class="header-btn" title="Configuración">
+      <ion-icon name="settings-outline"></ion-icon>
+    </button>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main id="main-content">
+    
+    <!-- VISTA: INICIO -->
+    <div id="page-home">
+      <h1 class="greeting" id="greeting">Buenos días</h1>
+      <div class="quick-grid" id="quick-grid"></div>
+      
+      <div class="section-header">
+        <h2 class="section-title">Hecho para ti</h2>
+      </div>
+      <div class="horizontal-scroll" id="made-for-you"></div>
+      
+      <div id="error-msg" class="error-msg"></div>
+    </div>
+
+    <!-- VISTA: BUSCAR -->
+    <div id="page-search" style="display:none;">
+      <h2 class="section-title" style="margin: 16px 0;">Buscar</h2>
+      <div id="search-error-msg" class="error-msg"></div>
+      
+      <!-- Contenedor de Resultados de Búsqueda -->
+      <div id="search-results" class="track-list"></div>
+      
+      <!-- Contenedor de Géneros (se oculta al buscar) -->
+      <h2 class="section-subtitle">Géneros populares</h2>
+      <div class="library-grid" id="genre-grid">
+        <div class="library-item" onclick="searchGenre('pop')">
+          <div style="background:linear-gradient(135deg,#ff6b6b,#ee5a5a);aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:20px;font-weight:800;letter-spacing:-0.5px;">Pop</span>
+          </div>
+        </div>
+        <div class="library-item" onclick="searchGenre('rock')">
+          <div style="background:linear-gradient(135deg,#4ecdc4,#44a08d);aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:20px;font-weight:800;letter-spacing:-0.5px;">Rock</span>
+          </div>
+        </div>
+        <div class="library-item" onclick="searchGenre('reggaeton')">
+          <div style="background:linear-gradient(135deg,#f7b731,#e58e26);aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:20px;font-weight:800;letter-spacing:-0.5px;">Reggaeton</span>
+          </div>
+        </div>
+        <div class="library-item" onclick="searchGenre('hip hop')">
+          <div style="background:linear-gradient(135deg,#a29bfe,#6c5ce7);aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:20px;font-weight:800;letter-spacing:-0.5px;">Hip Hop</span>
+          </div>
+        </div>
+        <div class="library-item" onclick="searchGenre('electronic')">
+          <div style="background:linear-gradient(135deg,#fd79a8,#e84393);aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:20px;font-weight:800;letter-spacing:-0.5px;">Electrónica</span>
+          </div>
+        </div>
+        <div class="library-item" onclick="searchGenre('latin')">
+          <div style="background:linear-gradient(135deg,#00b894,#00a085);aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:20px;font-weight:800;letter-spacing:-0.5px;">Latino</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA: BIBLIOTECA -->
+    <div id="page-library" style="display:none;">
+      <h2 class="section-title" style="margin: 16px 0;">Tu Biblioteca</h2>
+      
+      <!-- Pestañas internas de la Biblioteca -->
+      <div class="library-tabs">
+        <button class="library-tab active" data-tab="favorites" onclick="switchLibraryTab('favorites')">Favoritos</button>
+        <button class="library-tab" data-tab="playlists" onclick="switchLibraryTab('playlists')">Playlists</button>
+        <button class="library-tab" data-tab="offline" onclick="switchLibraryTab('offline')">Descargado</button>
+      </div>
+
+      <!-- Listas internas -->
+      <div id="library-favorites">
+        <div id="favorites-list" class="track-list"></div>
+      </div>
+      <div id="library-playlists" style="display:none;">
+        <div class="library-grid" id="playlists-grid"></div>
+      </div>
+      <div id="library-offline" style="display:none;">
+        <div id="offline-list" class="track-list"></div>
+      </div>
+
+      <!-- DETALLE DE PLAYLIST (Oculto por defecto) -->
+      <div id="library-playlist-detail" style="display:none;">
+        <div class="history-header" style="margin-top:0;">
+          <button class="clear-btn" onclick="goBackToPlaylists()">
+            <ion-icon name="chevron-back" style="font-size:20px;vertical-align:middle;"></ion-icon> Playlists
+          </button>
+          <button class="clear-btn" id="delete-playlist-btn" style="color:#ff453a;">
+            <ion-icon name="trash-outline" style="font-size:18px;vertical-align:middle;"></ion-icon> Eliminar
+          </button>
+        </div>
+        
+        <div class="action-sheet-info" style="border:none;margin-bottom:8px;padding-bottom:8px;">
+          <div style="background:linear-gradient(135deg,var(--accent),#282828);width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,0.3);">
+            <ion-icon name="musical-notes" style="font-size:28px;color:#000;"></ion-icon>
+          </div>
+          <div style="min-width:0;">
+            <h3 id="playlist-detail-title" style="font-size:18px;font-weight:800;color:var(--text-primary);">Nombre</h3>
+            <p id="playlist-detail-count" style="font-size:12px;color:var(--text-secondary);">0 canciones</p>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary" id="play-playlist-btn" style="margin: 8px 0 16px 0;width:100%;">
+          <ion-icon name="play" style="vertical-align:middle;margin-right:4px;"></ion-icon> Reproducir lista
+        </button>
+        
+        <div id="playlist-detail-tracks" class="track-list"></div>
+      </div>
+    </div>
+
+    <!-- VISTA: HISTORIAL -->
+    <div id="page-history" style="display:none;">
+      <div class="history-header">
+        <h2>Historial</h2>
+        <button class="clear-btn" onclick="clearHistory()">Borrar todo</button>
+      </div>
+      <div id="history-list" class="track-list"></div>
+    </div>
+  </main>
+
+  <!-- Navegación Inferior (Global) -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" data-page="home" onclick="navigateTo('home')">
+      <ion-icon name="home"></ion-icon>
+      <span>Inicio</span>
+    </div>
+    <div class="nav-item" data-page="search" onclick="navigateTo('search')">
+      <ion-icon name="search"></ion-icon>
+      <span>Buscar</span>
+    </div>
+    <div class="nav-item" data-page="library" onclick="navigateTo('library')">
+      <ion-icon name="library"></ion-icon>
+      <span>Biblioteca</span>
+    </div>
+    <div class="nav-item" data-page="history" onclick="navigateTo('history')">
+      <ion-icon name="time"></ion-icon>
+      <span>Historial</span>
+    </div>
+  </nav>
+
+  <!-- Mini-Reproductor Inferior (Fijo) -->
+  <div id="player-bar">
+    <div class="progress-container" id="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+    <div id="now-playing" onclick="openFullscreenPlayer()">
+      <img id="np-thumb" src="" alt="" style="display:none;">
+      <div class="info">
+        <div class="title" id="np-title">Sin reproducir</div>
+        <div class="artist" id="np-artist">—</div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="prev-btn" title="Anterior" disabled><ion-icon name="play-skip-back"></ion-icon></button>
+      <button class="play-btn" id="play-btn" title="Reproducir/Pausar" disabled><ion-icon name="play"></ion-icon></button>
+      <button id="next-btn" title="Siguiente" disabled><ion-icon name="play-skip-forward"></ion-icon></button>
+    </div>
+    <div class="volume-control">
+      <ion-icon name="volume-high" id="vol-icon"></ion-icon>
+      <input type="range" id="volume" min="0" max="100" value="50">
+    </div>
+  </div>
+
+  <!-- Reproductor Pantalla Completa -->
+  <div class="fullscreen-player" id="fullscreen-player">
+    <div class="fs-header">
+      <button onclick="closeFullscreenPlayer()"><ion-icon name="chevron-down"></ion-icon></button>
+      <span class="fs-title">Reproduciendo ahora</span>
+      <button onclick="openQueueModal()"><ion-icon name="list"></ion-icon></button>
+    </div>
+    <div class="fs-artwork">
+      <img id="fs-artwork" src="" alt="">
+    </div>
+    <div class="fs-info">
+      <div class="title" id="fs-title">Sin reproducir</div>
+      <div class="artist" id="fs-artist">—</div>
+    </div>
+    <div class="fs-progress">
+      <div class="fs-progress-bar" id="fs-progress-bar">
+        <div class="fs-progress-fill" id="fs-progress-fill"></div>
+      </div>
+      <div class="fs-time">
+        <span id="fs-current">0:00</span>
+        <span id="fs-duration">0:00</span>
+      </div>
+    </div>
+    <div class="fs-controls">
+      <button onclick="shuffleToggle()" id="shuffle-btn"><ion-icon name="shuffle"></ion-icon></button>
+      <button onclick="prevTrack()"><ion-icon name="play-skip-back"></ion-icon></button>
+      <button class="fs-play" onclick="togglePlay()" id="fs-play-btn"><ion-icon name="play"></ion-icon></button>
+      <button onclick="nextTrack()"><ion-icon name="play-skip-forward"></ion-icon></button>
+      <button onclick="repeatToggle()" id="repeat-btn"><ion-icon name="repeat"></ion-icon></button>
+    </div>
+    <div class="fs-extras">
+      <button onclick="toggleLike()" id="like-btn"><ion-icon name="heart-outline"></ion-icon><ion-icon name="heart"></ion-icon></button>
+      <button onclick="addToOffline()" id="offline-btn"><ion-icon name="cloud-download-outline"></ion-icon></button>
+      <button onclick="if(currentTrack) shareTrack(currentTrack)"><ion-icon name="share-outline"></ion-icon></button>
+    </div>
+  </div>
+
+  <!-- Contenedor Invisible para YouTube -->
+  <div id="yt-player-container">
+    <div id="yt-player"></div>
+  </div>
+
+  <!-- MODAL: Crear Playlist -->
+  <div class="modal" id="playlist-modal" onclick="if(event.target===this)closeCreatePlaylistModal()">
+    <div class="modal-content">
+      <div class="modal-title">Crear Playlist</div>
+      <label class="modal-label">Nombre de la lista</label>
+      <input type="text" id="playlist-name" class="modal-input" placeholder="Mi playlist super increíble">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeCreatePlaylistModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="submitPlaylist()">Crear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Seleccionar Playlist para Agregar canción -->
+  <div class="modal" id="playlist-select-modal" onclick="if(event.target===this)closePlaylistSelectModal()">
+    <div class="modal-content">
+      <div class="modal-title">Agregar a Playlist</div>
+      <div id="playlist-select-list" class="track-list" style="max-height:220px;overflow-y:auto;margin-bottom:16px;"></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closePlaylistSelectModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Cola de Reproducción -->
+  <div class="modal" id="queue-modal" onclick="if(event.target===this)closeQueueModal()">
+    <div class="modal-content" style="max-width:420px;">
+      <div class="modal-title" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span>Cola de reproducción</span>
+        <button class="clear-btn" onclick="clearPlayQueue()" style="font-size:12px;padding:4px 8px;">Limpiar cola</button>
+      </div>
+      <div id="queue-modal-list" class="track-list" style="max-height:280px;overflow-y:auto;margin-bottom:16px;padding-right:4px;"></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeQueueModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Ajustes de la App -->
+  <div class="modal" id="settings-modal" onclick="if(event.target===this)closeSettingsModal()">
+    <div class="modal-content">
+      <div class="modal-title">Ajustes</div>
+      
+      <label class="modal-label">YouTube Data API v3 Key</label>
+      <input type="text" id="settings-api-key" class="modal-input" placeholder="Ingresa tu clave de API de YouTube">
+      
+      <label class="modal-label">Tema de acento</label>
+      <div class="theme-selector">
+        <div class="theme-dot green" data-theme="green" title="Verde Spotify"></div>
+        <div class="theme-dot blue" data-theme="blue" title="Azul Eléctrico"></div>
+        <div class="theme-dot purple" data-theme="purple" title="Morado Neón"></div>
+        <div class="theme-dot orange" data-theme="orange" title="Rosa Coral"></div>
+      </div>
+      
+      <button class="btn btn-secondary" onclick="clearCachedSearches()" style="width:100%;margin-bottom:20px;text-align:center;display:block;">
+        Limpiar caché de búsquedas
+      </button>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeSettingsModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveSettings()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enlace a Scripts de la Aplicación -->
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

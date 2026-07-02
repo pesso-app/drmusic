@@ -1,0 +1,25 @@
+{
+  "name": "DR Music",
+  "short_name": "DR Music",
+  "description": "Tu música favorita desde YouTube con experiencia nativa.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#1db954",
+  "orientation": "portrait",
+  "categories": ["music", "utilities"],
+  "icons": [
+    {
+      "src": "icons/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
