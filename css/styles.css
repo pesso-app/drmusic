@@ -9,8 +9,9 @@
   --text-primary: #ffffff;
   --text-secondary: #b3b3b3; 
   --text-muted: #727272; 
-  --accent: #1db954;
-  --accent-hover: #1ed760; 
+  --accent: #e91429;
+  --accent-hover: #ff2a3b; 
+  --accent-text: #ffffff;
   --border: #282828; 
   --border-light: #3e3e3e;
   --radius-sm: 4px; 
@@ -20,28 +21,62 @@
   --radius-full: 500px;
   --safe-top: env(safe-area-inset-top, 0px); 
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Translucent/RGBA variables */
+  --bg-header-rgba: rgba(18, 18, 18, 0.85);
+  --bg-nav-rgba: rgba(18, 18, 18, 0.9);
+  --border-rgba: rgba(255, 255, 255, 0.06);
+  --border-light-rgba: rgba(255, 255, 255, 0.03);
+  --overlay-hover: rgba(255, 255, 255, 0.03);
+  --overlay-active: rgba(255, 255, 255, 0.06);
 }
 
 /* Temas Dinámicos */
 body.theme-red {
   --accent: #e91429;
   --accent-hover: #ff2a3b;
+  --accent-text: #ffffff;
 }
 body.theme-green {
   --accent: #1db954;
   --accent-hover: #1ed760;
+  --accent-text: #000000;
 }
 body.theme-blue {
   --accent: #00d2ff;
   --accent-hover: #80e5ff;
+  --accent-text: #000000;
 }
 body.theme-purple {
   --accent: #a855f7;
   --accent-hover: #c084fc;
+  --accent-text: #ffffff;
 }
 body.theme-orange {
   --accent: #f97316;
   --accent-hover: #fb923c;
+  --accent-text: #ffffff;
+}
+
+/* Modo Claro Override */
+body.light-mode {
+  --bg-primary: #f8f9fa; 
+  --bg-secondary: #ffffff; 
+  --bg-elevated: #e9ecef; 
+  --bg-card: #f8f9fa; 
+  --bg-card-hover: #e9ecef; 
+  --text-primary: #121212; 
+  --text-secondary: #495057; 
+  --text-muted: #868e96; 
+  --border: #dee2e6; 
+  --border-light: #e9ecef;
+  
+  --bg-header-rgba: rgba(248, 249, 250, 0.85);
+  --bg-nav-rgba: rgba(255, 255, 255, 0.9);
+  --border-rgba: rgba(0, 0, 0, 0.06);
+  --border-light-rgba: rgba(0, 0, 0, 0.03);
+  --overlay-hover: rgba(0, 0, 0, 0.03);
+  --overlay-active: rgba(0, 0, 0, 0.06);
 }
 
 * { 
@@ -72,14 +107,14 @@ body {
   position: sticky; 
   top: 0; 
   z-index: 100; 
-  background: rgba(18, 18, 18, 0.85); 
+  background: var(--bg-header-rgba); 
   backdrop-filter: blur(20px) saturate(180%); 
   -webkit-backdrop-filter: blur(20px) saturate(180%); 
   padding: 12px 16px; 
   display: flex; 
   align-items: center; 
   gap: 12px; 
-  border-bottom: 1px solid rgba(255,255,255,0.06); 
+  border-bottom: 1px solid var(--border-rgba); 
 }
 
 .logo { 
@@ -104,7 +139,7 @@ body {
 }
 
 .logo-icon ion-icon { 
-  color: #000; 
+  color: var(--accent-text); 
   font-size: 20px; 
 }
 
@@ -222,7 +257,7 @@ main {
   cursor: pointer; 
   transition: background 0.3s ease, transform 0.2s ease; 
   overflow: hidden; 
-  border: 1px solid rgba(255,255,255,0.03);
+  border: 1px solid var(--border-light-rgba);
 }
 
 .quick-item:hover { 
@@ -329,11 +364,11 @@ main {
 }
 
 .track:hover {
-  background: rgba(255,255,255,0.03);
+  background: var(--overlay-hover);
 }
 
 .track:active { 
-  background: rgba(255,255,255,0.06); 
+  background: var(--overlay-active); 
   transform: scale(0.99);
 }
 
@@ -395,7 +430,7 @@ main {
 }
 
 .track.playing { 
-  background: rgba(255, 255, 255, 0.05); 
+  background: var(--overlay-active); 
 }
 
 .track.playing .track-num { 
@@ -502,7 +537,7 @@ main {
   left: 0; 
   right: 0; 
   background: var(--bg-secondary); 
-  border-top: 1px solid rgba(255,255,255,0.06); 
+  border-top: 1px solid var(--border-rgba); 
   padding: 8px 16px; 
   display: flex; 
   align-items: center; 
@@ -527,7 +562,7 @@ main {
   left: 0; 
   right: 0; 
   height: 4px; 
-  background: rgba(255,255,255,0.1); 
+  background: var(--overlay-active); 
   transition: height 0.1s;
 }
 
@@ -643,8 +678,8 @@ main {
 
 .controls .play-btn:hover:not(:disabled) {
   transform: scale(1.05);
-  background: #ffffff;
-  color: #000;
+  background: var(--text-primary);
+  color: var(--bg-primary);
 }
 
 .controls .play-btn:active:not(:disabled) { 
@@ -706,10 +741,10 @@ main {
   bottom: 0; 
   left: 0; 
   right: 0; 
-  background: rgba(18, 18, 18, 0.9); 
+  background: var(--bg-nav-rgba); 
   backdrop-filter: blur(20px); 
   -webkit-backdrop-filter: blur(20px); 
-  border-top: 1px solid rgba(255,255,255,0.06); 
+  border-top: 1px solid var(--border-rgba); 
   display: flex; 
   justify-content: space-around; 
   padding: 8px 0 calc(8px + var(--safe-bottom)); 
@@ -917,7 +952,7 @@ main {
 
 .fs-controls button:hover {
   color: var(--text-primary);
-  background: rgba(255,255,255,0.05);
+  background: var(--overlay-active);
 }
 
 .fs-controls button:active { 
@@ -941,8 +976,8 @@ main {
 }
 
 .fs-controls .fs-play:hover {
-  background: #ffffff;
-  color: #000;
+  background: var(--text-primary);
+  color: var(--bg-primary);
   transform: scale(1.05);
 }
 
@@ -976,7 +1011,7 @@ main {
 
 .fs-extras button:hover {
   color: var(--text-primary);
-  background: rgba(255,255,255,0.05);
+  background: var(--overlay-active);
 }
 
 .fs-extras button ion-icon { 
@@ -1019,12 +1054,12 @@ main {
   cursor: pointer; 
   white-space: nowrap; 
   transition: all 0.2s; 
-  border: 1px solid rgba(255,255,255,0.03);
+  border: 1px solid var(--border-light-rgba);
 }
 
 .library-tab.active { 
   background: var(--accent); 
-  color: #000; 
+  color: var(--accent-text); 
 }
 
 .library-tab:active { 
@@ -1097,7 +1132,7 @@ main {
 }
 
 .clear-btn:hover {
-  background: rgba(255,255,255,0.03);
+  background: var(--overlay-hover);
 }
 
 .clear-btn:active { 
@@ -1150,7 +1185,7 @@ main {
   left: 50%; 
   transform: translateX(-50%) translateY(100px); 
   background: var(--accent); 
-  color: #000; 
+  color: var(--accent-text); 
   padding: 12px 24px; 
   border-radius: var(--radius-full); 
   font-size: 13px; 
@@ -1195,7 +1230,7 @@ main {
   border-radius: 20px 20px 0 0; 
   padding: 16px 16px calc(16px + var(--safe-bottom)); 
   animation: slideUp 0.3s cubic-bezier(0.1, 0.9, 0.2, 1); 
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid var(--border-rgba);
 }
 
 .action-sheet-item { 
@@ -1217,7 +1252,7 @@ main {
 }
 
 .action-sheet-item:hover {
-  background: rgba(255,255,255,0.03);
+  background: var(--overlay-hover);
 }
 
 .action-sheet-item ion-icon { 
@@ -1346,7 +1381,17 @@ main {
 
 .btn-primary {
   background: var(--accent);
-  color: #000;
+  color: var(--accent-text);
+}
+
+/* Mode Toggle Buttons in Settings */
+.mode-btn.active {
+  background: var(--accent) !important;
+  color: var(--accent-text) !important;
+  border-color: transparent !important;
+}
+.mode-btn.active:hover {
+  background: var(--accent-hover) !important;
 }
 
 .btn-primary:hover {

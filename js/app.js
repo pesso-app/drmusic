@@ -53,15 +53,45 @@ function getApiKey() {
 }
 
 // Aplicar tema de color seleccionado
+let currentMode = 'dark';
+
 function applyTheme() {
   const settings = window.Storage.getSettings();
   document.body.className = 'theme-' + (settings.theme || 'red');
+  
+  // Aplicar modo de pantalla (claro / oscuro)
+  const mode = settings.mode || 'dark';
+  currentMode = mode;
+  document.body.classList.toggle('light-mode', mode === 'light');
   
   // Activar el punto de tema en modal de configuración
   document.querySelectorAll('.theme-dot').forEach(dot => {
     dot.classList.toggle('active', dot.dataset.theme === settings.theme);
   });
+
+  // Sincronizar botones de modo de pantalla en modal
+  const darkBtn = document.getElementById('mode-dark-btn');
+  const lightBtn = document.getElementById('mode-light-btn');
+  if (darkBtn && lightBtn) {
+    darkBtn.classList.toggle('active', mode === 'dark');
+    lightBtn.classList.toggle('active', mode === 'light');
+  }
 }
+
+function setScreenMode(mode) {
+  currentMode = mode;
+  document.body.classList.toggle('light-mode', mode === 'light');
+  window.Storage.saveSetting('mode', mode);
+
+  // Sincronizar UI de botones
+  const darkBtn = document.getElementById('mode-dark-btn');
+  const lightBtn = document.getElementById('mode-light-btn');
+  if (darkBtn && lightBtn) {
+    darkBtn.classList.toggle('active', mode === 'dark');
+    lightBtn.classList.toggle('active', mode === 'light');
+  }
+}
+window.setScreenMode = setScreenMode;
 
 // Registrar el Service Worker para soporte Offline
 function registerServiceWorker() {
@@ -723,7 +753,7 @@ function loadLibraryContent(tab) {
     let html = `
       <div class="library-item" onclick="openCreatePlaylistModal()">
         <div style="background:linear-gradient(135deg,var(--accent),var(--bg-elevated));aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-          <ion-icon name="add" style="font-size:48px;color:#000;"></ion-icon>
+          <ion-icon name="add" style="font-size:48px;color:var(--accent-text);"></ion-icon>
         </div>
         <div class="title" style="margin-top:8px;">Crear playlist</div>
         <div class="subtitle">Nueva lista</div>
@@ -734,7 +764,7 @@ function loadLibraryContent(tab) {
       const count = pl.tracks.length;
       html += `
         <div class="library-item" onclick="viewPlaylistDetail('${pl.id}')">
-          <div style="background:linear-gradient(135deg,#242424,#121212);aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow: 0 4px 12px rgba(0,0,0,0.3);position:relative;">
+          <div style="background:linear-gradient(135deg,var(--bg-elevated),var(--bg-primary));aspect-ratio:1;border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow: 0 4px 12px rgba(0,0,0,0.3);position:relative;">
             <ion-icon name="musical-notes-outline" style="font-size:40px;color:var(--text-secondary);"></ion-icon>
           </div>
           <div class="title" style="margin-top:8px;">${escapeHtml(pl.name)}</div>
@@ -1335,6 +1365,15 @@ function openSettingsModal() {
   document.querySelectorAll('.theme-dot').forEach(dot => {
     dot.classList.toggle('active', dot.dataset.theme === settings.theme);
   });
+
+  // Resaltar modo de pantalla actual
+  const mode = settings.mode || 'dark';
+  const darkBtn = document.getElementById('mode-dark-btn');
+  const lightBtn = document.getElementById('mode-light-btn');
+  if (darkBtn && lightBtn) {
+    darkBtn.classList.toggle('active', mode === 'dark');
+    lightBtn.classList.toggle('active', mode === 'light');
+  }
   
   modal.classList.add('active');
 }
