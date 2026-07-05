@@ -98,7 +98,7 @@ window.Storage = {
   getSettings: function() {
     const defaultSettings = {
       apiKey: '',
-      theme: 'green',
+      theme: 'red',
       volume: 50
     };
     return this.get('settings', defaultSettings);

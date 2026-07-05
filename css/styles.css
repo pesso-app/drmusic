@@ -23,6 +23,10 @@
 }
 
 /* Temas Dinámicos */
+body.theme-red {
+  --accent: #e91429;
+  --accent-hover: #ff2a3b;
+}
 body.theme-green {
   --accent: #1db954;
   --accent-hover: #1ed760;
@@ -59,7 +63,7 @@ body {
   min-height: 100dvh; 
   overflow-x: hidden; 
   -webkit-font-smoothing: antialiased; 
-  padding-bottom: calc(85px + var(--safe-bottom)); 
+  padding-bottom: calc(140px + var(--safe-bottom)); 
   padding-top: var(--safe-top); 
 }
 
@@ -494,16 +498,16 @@ main {
 /* Player Bar */
 #player-bar { 
   position: fixed; 
-  bottom: 0; 
+  bottom: calc(60px + var(--safe-bottom)); 
   left: 0; 
   right: 0; 
   background: var(--bg-secondary); 
   border-top: 1px solid rgba(255,255,255,0.06); 
-  padding: 8px 16px calc(10px + var(--safe-bottom)); 
+  padding: 8px 16px; 
   display: flex; 
   align-items: center; 
   gap: 12px; 
-  z-index: 1000; 
+  z-index: 999; 
   transition: transform 0.3s ease; 
 }
 
@@ -699,7 +703,7 @@ main {
 /* Bottom Nav */
 .bottom-nav { 
   position: fixed; 
-  bottom: calc(64px + var(--safe-bottom)); 
+  bottom: 0; 
   left: 0; 
   right: 0; 
   background: rgba(18, 18, 18, 0.9); 
@@ -708,8 +712,8 @@ main {
   border-top: 1px solid rgba(255,255,255,0.06); 
   display: flex; 
   justify-content: space-around; 
-  padding: 8px 0; 
-  z-index: 999; 
+  padding: 8px 0 calc(8px + var(--safe-bottom)); 
+  z-index: 1000; 
 }
 
 .nav-item { 
@@ -1383,6 +1387,7 @@ main {
   transform: scale(1.15);
 }
 
+.theme-dot.red { background: #e91429; }
 .theme-dot.green { background: #1db954; }
 .theme-dot.blue { background: #00d2ff; }
 .theme-dot.purple { background: #a855f7; }

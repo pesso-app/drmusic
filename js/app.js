@@ -55,7 +55,7 @@ function getApiKey() {
 // Aplicar tema de color seleccionado
 function applyTheme() {
   const settings = window.Storage.getSettings();
-  document.body.className = 'theme-' + (settings.theme || 'green');
+  document.body.className = 'theme-' + (settings.theme || 'red');
   
   // Activar el punto de tema en modal de configuración
   document.querySelectorAll('.theme-dot').forEach(dot => {
@@ -222,6 +222,78 @@ function handleAction(action) {
 window.handleAction = handleAction;
 
 // ============================================================
+// AUDIO SILENCIOSO Y MEDIA SESSION (SOPORTE SEGUNDO PLANO)
+// ============================================================
+let silentPlayer = null;
+
+function initSilentAudio() {
+  if (!silentPlayer) {
+    silentPlayer = new Audio();
+    // 0.1s silent WAV file base64 data URI
+    silentPlayer.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+    silentPlayer.loop = true;
+  }
+}
+
+function playSilentAudio() {
+  initSilentAudio();
+  silentPlayer.play().catch(err => {
+    console.warn('No se pudo reproducir el audio silencioso:', err);
+  });
+}
+
+function pauseSilentAudio() {
+  if (silentPlayer) {
+    silentPlayer.pause();
+  }
+}
+
+function updateMediaSession() {
+  if ('mediaSession' in navigator && currentTrack) {
+    const title = currentTrack.snippet.title;
+    const artist = currentTrack.snippet.channelTitle;
+    const thumb = currentTrack.snippet.thumbnails?.medium?.url || currentTrack.snippet.thumbnails?.default?.url || '';
+
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: title,
+      artist: artist,
+      album: 'DR Music',
+      artwork: [
+        { src: thumb, sizes: '96x96',   type: 'image/jpeg' },
+        { src: thumb, sizes: '128x128', type: 'image/jpeg' },
+        { src: thumb, sizes: '192x192', type: 'image/jpeg' },
+        { src: thumb, sizes: '256x256', type: 'image/jpeg' },
+        { src: thumb, sizes: '384x384', type: 'image/jpeg' },
+        { src: thumb, sizes: '512x512', type: 'image/jpeg' }
+      ]
+    });
+
+    setupMediaSessionActions();
+  }
+}
+
+function setupMediaSessionActions() {
+  if ('mediaSession' in navigator) {
+    try {
+      navigator.mediaSession.setActionHandler('play', () => {
+        togglePlay();
+      });
+      navigator.mediaSession.setActionHandler('pause', () => {
+        togglePlay();
+      });
+      navigator.mediaSession.setActionHandler('previoustrack', () => {
+        prevTrack();
+      });
+      navigator.mediaSession.setActionHandler('nexttrack', () => {
+        nextTrack();
+      });
+    } catch (error) {
+      console.warn('El navegador no soporta algunos manejadores de Media Session:', error);
+    }
+  }
+}
+
+// ============================================================
 // REPRODUCTOR YOUTUBE
 // ============================================================
 const scriptTag = document.createElement('script');
@@ -267,9 +339,19 @@ function onPlayerStateChange(event) {
   if (isPlaying) {
     artwork.classList.add('playing');
     startProgressUpdate();
+    playSilentAudio();
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = 'playing';
+    }
   } else {
     artwork.classList.remove('playing');
     stopProgressUpdate();
+    if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+      pauseSilentAudio();
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = 'paused';
+      }
+    }
   }
 
   // Reproducción finalizada
@@ -1095,6 +1177,11 @@ function playTrackIndex(index) {
     updateLikeButton();
     updateOfflineButton();
     hideError();
+    
+    // Actualizar Media Session con la nueva canción
+    updateMediaSession();
+    // Reproducir audio silencioso para mantener vivo el proceso
+    playSilentAudio();
   } catch (e) {
     console.error('Error al reproducir canción:', e);
     showError('Error al iniciar la canción.');
@@ -1162,6 +1249,11 @@ function stopPlaybackState() {
   stopProgressUpdate();
   document.getElementById('progress-fill').style.width = '0%';
   document.getElementById('fs-progress-fill').style.width = '0%';
+  
+  pauseSilentAudio();
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.playbackState = 'none';
+  }
 }
 
 function updateControlsState() {
